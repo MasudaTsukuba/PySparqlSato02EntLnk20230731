@@ -286,7 +286,7 @@ class Uri:
         conn.close()
 
     # build entity linking
-    def build_entity_linking(self, database, tables, id_label=True, replace=True):
+    def build_entity_linking(self, database, tables, id_label=True, replace=True):  # called from [data_set2, dataset20230626]/main020_create_rntity_linking_db.py
         conn = sqlite3.connect(self.entity_linking_file)
         cursor = conn.cursor()
 
@@ -371,7 +371,7 @@ class Uri:
         conn.close()
         pass
 
-    def read_entity_linking(self, tables):
+    def read_entity_linking(self, tables):  # not used at the moment of 2023/7/31
         conn = sqlite3.connect(self.entity_linking_file)
         cursor = conn.cursor()
 

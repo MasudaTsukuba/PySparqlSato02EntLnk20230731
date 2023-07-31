@@ -19,14 +19,14 @@ if __name__ == '__main__':
     query = 'q1_author_name.txt'
     query = 'q1_genre_type.txt'
     query = 'q1_genre_name.txt'
-    query = 'q2.txt'
-    query = 'q3.txt'
-    query = 'q4_author.txt'
-    query = 'q4_book_author.txt'
-    query = 'q4_IAmACat.txt'
-    query = 'q4_IAmACat_author.txt'
-    query = 'q4_book_Soseki.txt'
-    query = 'q4_book_name_Soseki.txt'
+    # query = 'q2.txt'
+    # query = 'q3.txt'
+    # query = 'q4_author.txt'
+    # query = 'q4_book_author.txt'
+    # query = 'q4_IAmACat.txt'
+    # query = 'q4_IAmACat_author.txt'
+    # query = 'q4_book_Soseki.txt'
+    # query = 'q4_book_name_Soseki.txt'
 
     TimingClass.set_file_name('timing_book20230728.csv', initialize=True, time_stamp=True)
     execute.execute_query(query)

@@ -3,6 +3,7 @@
 # Amagasa Laboratory, University of Tsukuba
 
 import json
+import os.path
 
 
 class Mapping:
@@ -22,4 +23,16 @@ class Mapping:
             if obje['type'] == 'Variable' and obje['uri'] != 'plain':
                 self.var_prefix_map[obje['variable']] = obje['uri']
             pass
+        pass
+
+        self.mapping_func = {}
+        uri_path = os.path.dirname(path)
+        uri_path = os.path.dirname(uri_path)
+        uri_path = uri_path + '/uri/'
+        for file in os.listdir(uri_path):  # read *.py
+            if file.endswith(".py"):
+                with open(uri_path+file, 'r') as input_file:
+                    uri_genre_code = input_file.read()
+                    self.mapping_func[file] = uri_genre_code
+                    pass
         pass

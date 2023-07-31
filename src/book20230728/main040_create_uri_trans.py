@@ -59,7 +59,7 @@ with open('../../data/book20230728/csv/genre_label.csv') as csvfile:
             genre_set.add(genre_id)
             genre_list.append([f'http://localhost/genre/genre_id/{genre_id}', genre_uri])
 
-with open('../../data/book20230728/uri/PREFIX_genre.csv', 'w') as csvout:
+with open('../../data/book20230728/uri/PREFIX_genre.csv2', 'w') as csvout:
     csv_writer = csv.writer(csvout)
     csv_writer.writerows(genre_list)
 

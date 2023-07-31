@@ -12,7 +12,7 @@ import sys
 
 
 class SparqlQuery:
-    def __init__(self, query_uri, uri):
+    def __init__(self, query_uri, uri, mapping):
         # ------ ユーザから得て, JSON形式に変換したSPARQLを取り込む --------
         # self.var_list = None  # list of variables
         self.filter_list = None  # list of filters
@@ -33,6 +33,7 @@ class SparqlQuery:
         #     json_open.close()
         #     return uri_mapping_dict
         # self.uri_mapping_dict = open_mapping()
+        self.mapping = mapping
 
         # ------------------------------------------------------------
         self.variables_translation_list = {}  # dictionary for indicating the translation of variables to the corresponding variables in the mapping file
@@ -427,15 +428,29 @@ class SparqlQuery:
             row = []
             for element, header in zip(result, headers):
                 converted_element = str(element)
-                try:
-                    converted_element = uri.uri_dict_all[element]  # use unified table
-                    # uri_dict = self.variables_translation_list[header]  # use individual tables
-                    # try:
-                    #     converted_element = uri.uri_dict[uri_dict][element]
-                    # except KeyError:
-                    #     pass
-                except KeyError:
-                    pass
+                if converted_element.find('http://localhost/') >= 0:
+                    try:
+                        converted_element = uri.uri_dict_all[element]  # use unified table
+                        # uri_dict = self.variables_translation_list[header]  # use individual tables
+                        # try:
+                        #     converted_element = uri.uri_dict[uri_dict][element]
+                        # except KeyError:
+                        #     pass
+                    except KeyError:
+                        table_column_matches = re.findall(r'http://localhost/([A-Za-z_][A-Za-z0-9_]*/[A-Za-z_][A-Za-z0-9_]*)/[A-Za-z_][A-Za-z0-9_]*', converted_element)
+                        if len(table_column_matches) == 1:
+                            uri_func = self.mapping.mapping_dict['uri'][table_column_matches[0]]
+                            try:
+                                code = self.mapping.mapping_func[uri_func]
+                                uri_variables = {}
+                                code_formatted = code.format(f'"{converted_element}"')
+                                exec(code_formatted, globals(), uri_variables)
+                                converted_element = uri_variables['uri_results']
+                                pass
+                            except KeyError:
+                                pass
+                            pass
+                        pass
                 row.append(converted_element)
             sparql_results.append(row)
         return sparql_results
