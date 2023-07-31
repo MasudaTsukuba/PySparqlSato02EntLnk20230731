@@ -9,7 +9,6 @@ import sqlite3
 import spacy
 import csv
 # import json
-# import csv
 # from spacy.pipeline import EntityLinker
 # from src.DatabaseClass import DataBase
 # from src.PathClass import PathClass
@@ -21,8 +20,8 @@ class Uri:
         self.uri_path = self.path.dataset_path + '/uri/'  # ./data_set2/uri
         self.uri_dict = {}  # str->uri dictionary
         self.inv_dict = {}  # uri->str dictionary
-        # self.uri_dict_all = {}
-        # self.inv_dict_all = {}
+        self.uri_dict_all = {}
+        self.inv_dict_all = {}
         # for file in os.listdir(self.uri_path):  # read PREFIX*.csv
         #     if file.endswith(".csv"):
         #         df = pd.read_csv(self.uri_path + file, header=None)
@@ -49,10 +48,10 @@ class Uri:
         def rewrite_where_sql(sql: str, where_value, var):
             if 'WHERE' in sql:  # if WHERE key word is already in the sql statement
                 index = sql.find(';')  # find the last
-                re_sql = sql[:index] + ' AND ' + var + ' = "' + where_value + '";'  # append the WHERE clause at the end
+                re_sql = f"{sql[:index]} AND {var} = '{where_value}';"  # append the WHERE clause at the end
             else:  # first time 'WHERE' is inserted
                 index = sql.find(';')
-                re_sql = sql[:index] + ' WHERE ' + var + ' = "' + where_value + '";'  # first WHERE
+                re_sql = f"{sql[:index]} WHERE {var} = '{where_value}';"  # first WHERE
             return re_sql
 
         def rewrite_where_sql_filter(sql: str, sql_filter, uri_table):
@@ -62,12 +61,12 @@ class Uri:
                 for match in matches:
                     replacement = match
                     try:
-                        # replacement = self.inv_dict_all[match]
-                        temp_inv_dict = self.inv_dict[uri_table]  # use individual uri table  # 2023/6/14
-                        try:
-                            replacement = temp_inv_dict[match]
-                        except KeyError:
-                            pass
+                        replacement = self.inv_dict_all[match]
+                        # temp_inv_dict = self.inv_dict[uri_table]  # use individual uri table  # 2023/6/14
+                        # try:
+                        #     replacement = temp_inv_dict[match]
+                        # except KeyError:
+                        #     pass
                         sql_filter = re.sub(match, replacement, sql_filter)
                     except KeyError:
                         pass
@@ -81,7 +80,10 @@ class Uri:
 
         def create_trans_uri(triple, sql, key):
             value = triple[key]['value']  # get the name of the variable
-            sql_replace = sql.replace(mapping[key]['variable'], value)  # replace the variable in sql statement
+            if sql:
+                sql_replace = sql.replace(mapping[key]['variable'], value)  # replace the variable in sql statement
+            else:
+                sql_replace = None
             try:
                 # trans_uri.append([value, mapping[key]['uri']])
                 trans_uri[value] = mapping[key]['uri']  # 2023/6/14
@@ -121,19 +123,25 @@ class Uri:
                 # sql_value = self.inv_dict[uri_function][value]
                 # sql_value = self.inv_dict[uri_function][value]
                 sql_value = value
-                # try:
-                #     sql_value = self.inv_dict_all[value]
-                # except KeyError:
-                #     pass
-                try:  # 2023/6/14  # use individual PREFIX files
-                    inv_dict = self.inv_dict[uri_function]
-                    try:
-                        sql_value = inv_dict[value]
-                    except KeyError:
-                        pass
+                try:
+                    sql_value = self.inv_dict_all[value]
                 except KeyError:
                     pass
-                sql = rewrite_where_sql(sql, sql_value, mapping['subject']['variable'])
+                # try:  # 2023/6/14  # use individual PREFIX files
+                #     inv_dict = self.inv_dict[uri_function]
+                #     try:
+                #         sql_value = inv_dict[value]
+                #     except KeyError:
+                #         pass
+                # except KeyError:
+                #     pass
+                # sql = rewrite_where_sql(sql, sql_value, mapping['subject']['variable'])
+                var = mapping['subject']['column'][0]
+                where_value_matches = re.findall(fr"{mapping['subject']['content']}", sql_value)
+                if where_value_matches:
+                    sql = rewrite_where_sql(sql, where_value_matches[0], var)
+                else:
+                    sql = None
 
         elif triple['subject']['termType'] == 'BlankNode':  # 2023/7/20
             trans_uri, sql, value = create_trans_uri(triple, sql, 'subject')
@@ -168,8 +176,24 @@ class Uri:
                 sql_value = value  # 2023/5/8
                 sql = rewrite_where_sql(sql, sql_value, mapping['object']['variable'])  # 2023/5/8
             else:
-                value = triple['object']['value']
-                uri_function = mapping['object']['uri']
+                sql_value = value
+                try:
+                    sql_value = self.inv_dict_all[value]
+                except KeyError:
+                    pass
+                var = mapping['object']['column'][0]
+                where_value_matches = re.findall(fr"{mapping['object']['content']}", sql_value)
+                if where_value_matches:
+                    sql = rewrite_where_sql(sql, where_value_matches[0], var)
+                else:
+                    sql = None
+                pass
+                # value = triple['object']['value']
+                # try:
+                #     sql_value = self.inv_dict_all[value]
+                # except KeyError:
+                #     pass
+                # uri_function = mapping['object']['uri']
                 # with open(self.uri_directory + uri_function + '.csv') as g:
                 #     reader = csv.reader(g)
                 #     for row in reader:
@@ -183,15 +207,15 @@ class Uri:
                 #     # sql = sql.replace(mapping['object'], value)
                 # except KeyError:  # 2023/5/8
                 #     return ['No', []]  # 2023/5/8
-                try:  # 2023/6/14  # use individual PREFIX files
-                    inv_dict = self.inv_dict[uri_function]
-                    try:
-                        sql_value = inv_dict[value]
-                        sql = rewrite_where_sql(sql, sql_value, mapping['object'])
-                    except KeyError:
-                        return ['No', []]
-                except KeyError:
-                    return ['No', []]
+                # try:  # 2023/6/14  # use individual PREFIX files
+                #     inv_dict = self.inv_dict[uri_function]
+                #     try:
+                #         sql_value = inv_dict[value]
+                #         sql = rewrite_where_sql(sql, sql_value, mapping['object'])
+                #     except KeyError:
+                #         return ['No', []]
+                # except KeyError:
+                #     return ['No', []]
 
         elif triple['object']['termType'] == 'BlankNode':  # 2023/7/20
             trans_uri, sql, value = create_trans_uri(triple, sql, 'object')
@@ -382,6 +406,6 @@ class Uri:
                 # self.uri_dict_all.update(zip(df[0], df[1]))  # all the files in one dictionary
                 # self.inv_dict_all.update(zip(df[1], df[0]))
 
-                # for value0, value1 in zip(df[0], df[1]):
-                #     self.uri_dict_all[str(value0)] = str(value1)
-                #     self.inv_dict_all[str(value1)] = str(value0)
+                for value0, value1 in zip(df[0], df[1]):
+                    self.uri_dict_all[str(value0)] = str(value1)
+                    self.inv_dict_all[str(value1)] = str(value0)

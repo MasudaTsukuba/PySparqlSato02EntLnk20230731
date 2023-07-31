@@ -1,7 +1,7 @@
 query, date_time, keyword, exec_time
-q4_book_author.txt,2023-07-28 16:33:18,read_entity_linking_from_csv,0.22783565521240234
-q4_book_author.txt,2023-07-28 16:33:18,query2json,0.13773369789123535
-q4_book_author.txt,2023-07-28 16:33:18,sparql_to_sql,0.0003006458282470703
-q4_book_author.txt,2023-07-28 16:33:18,sql_execution,0.3190338611602783
-q4_book_author.txt,2023-07-28 16:33:18,sql_to_sparql,0.17255949974060059
-q4_book_author.txt,2023-07-28 16:33:18,total_execution,1.1215476989746094
+q4_book_name_Soseki.txt,2023-07-31 14:14:55,read_entity_linking_from_csv,0.38602352142333984
+q4_book_name_Soseki.txt,2023-07-31 14:14:55,query2json,0.1388869285583496
+q4_book_name_Soseki.txt,2023-07-31 14:14:55,sparql_to_sql,0.00043845176696777344
+q4_book_name_Soseki.txt,2023-07-31 14:14:55,sql_execution,2.1209280490875244
+q4_book_name_Soseki.txt,2023-07-31 14:14:55,sql_to_sparql,5.14984130859375e-05
+q4_book_name_Soseki.txt,2023-07-31 14:14:55,total_execution,2.659414529800415

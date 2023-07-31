@@ -15,7 +15,7 @@ with open('../../data/book20230728/csv/book_title.csv') as csvfile:
             pass
         else:
             book_set.add(book_id)
-            book_list.append([book_id, book_uri])
+            book_list.append([f'http://localhost/book_title/book_id/{book_id}', book_uri])
 
 with open('../../data/book20230728/uri/PREFIX_book.csv', 'w') as csvout:
     csv_writer = csv.writer(csvout)
@@ -36,7 +36,7 @@ with open('../../data/book20230728/csv/author_label.csv') as csvfile:
             pass
         else:
             author_set.add(author_id)
-            author_list.append([author_id, author_uri])
+            author_list.append([f'http://localhost/author/author_id/{author_id}', author_uri])
 
 with open('../../data/book20230728/uri/PREFIX_author.csv', 'w') as csvout:
     csv_writer = csv.writer(csvout)
@@ -57,7 +57,7 @@ with open('../../data/book20230728/csv/genre_label.csv') as csvfile:
             pass
         else:
             genre_set.add(genre_id)
-            genre_list.append([genre_id, genre_uri])
+            genre_list.append([f'http://localhost/genre/genre_id/{genre_id}', genre_uri])
 
 with open('../../data/book20230728/uri/PREFIX_genre.csv', 'w') as csvout:
     csv_writer = csv.writer(csvout)

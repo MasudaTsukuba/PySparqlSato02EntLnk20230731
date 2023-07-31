@@ -49,6 +49,10 @@ if __name__ == '__main__':
     path.set_mapping_file('mapping_revised.json')
     execute = ExecuteQueryClass(path)
     query = 'q1.txt'
+    query = 'q1_hotel_name_only.txt'  # q1 without country, only hotel id and name
+    query = 'q1_hotel_country_id.txt'  # q1 wit country_id, but without country name
+    query = 'q1_pred_hotel_get.txt'  # predicate for rdf:type is variable
+    query = 'q1_pred_get_hotel.txt'  # return predicate value
     # query = 'q2_MoveableFacility.txt'
     # query = 'q3a.txt'
     # query = 'q3b.txt'
@@ -56,7 +60,7 @@ if __name__ == '__main__':
     # query = 'q5.txt'
     # query = 'q6.txt'
     # query = 'q7.txt'
-    # query = 'q7b.txt'
+    query = 'q7b.txt'
     # query = 'q1_pred_hotel.txt'
     # query = 'q1_pred_building.txt'
     # query = 'q1_pred_museum.txt'
@@ -70,9 +74,5 @@ if __name__ == '__main__':
     # query = 'query_extract_labels20230519.txt'
     # query = 'q5b.txt'
     # query = 'q5c.txt'
-    # query = 'q1_hotel_name_only.txt'  # q1 without country, only hotel id and name
-    # query = 'q1_hotel_country_id.txt'  # q1 wit country_id, but without country name
-    # query = 'q1_pred_hotel_get.txt'  # predicate for rdf:type is variable
-    # query = 'q1_pred_get_hotel.txt'  # return predicate value
     # query = 'query_description.txt'
     execute.execute_query(query)

@@ -73,24 +73,25 @@ class SparqlQuery:
             for triple in query_json['where'][0]['triples']:  # process each triple in sparql query
                 sql_subquery = []  # a list of individual sql queries
                 q_predicate = triple['predicate']['value']  # 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type'
-                q_type = triple['predicate']['termType']  # 'NamedNode'
-                if q_type == 'NamedNode':  # in case the predicate in the query triple is not a variable
-                    for mapping in mapping_class.mapping_dict:  # search mapping rules
+                q_predicate_type = triple['predicate']['termType']  # 'NamedNode'
+                if q_predicate_type == 'NamedNode':  # in case the predicate in the query triple is not a variable
+                    for mapping in mapping_class.mapping_dict['rules']:  # search mapping rules
                         predicate = mapping["predicate"]["content"]
                         if q_predicate == predicate:  # predicates matched
                             sql = mapping["SQL"]  # sql statement in the mapping file
                             # answer = uri.translate_sql(sql, triple, mapping, filter_list)
                             answer = uri.translate_sql(sql, triple, mapping)  # 2023/6/16
-                            re_sql = answer[0]  # uri translated sql
-                            if answer[1]:
-                                for key, value in answer[1].items():
-                                    if value != '-' and value != 'plain':
-                                        self.variables_translation_list[key] = value
-                                    # if ans[0] not in checked:
-                                        # trans_uri_list.append(ans)
-                                #         check.append(ans[0])
-                            if re_sql != 'No':
-                                sql_subquery.append(re_sql)
+                            if answer[0]:
+                                re_sql = answer[0]  # uri translated sql
+                                if answer[1]:
+                                    for key, value in answer[1].items():
+                                        if value != '-' and value != 'plain':
+                                            self.variables_translation_list[key] = value
+                                        # if ans[0] not in checked:
+                                            # trans_uri_list.append(ans)
+                                    #         check.append(ans[0])
+                                if re_sql != 'No':
+                                    sql_subquery.append(re_sql)
                     insert_sql = ''
                     if sql_subquery:  # matches are found
                         # for sub_q in sql_subquery:
@@ -108,27 +109,28 @@ class SparqlQuery:
                         insert_sql = insert_sql.replace(';', '') + ';'  # add a semicolon at the end
                     # checked = checked + check
                     sql_queries.append(insert_sql)  # append into a list
-                elif q_type == 'Variable':  # in the case the predicate of the query triple is a variable
+                elif q_predicate_type == 'Variable':  # in the case the predicate of the query triple is a variable
                     predicate_variable = triple['predicate']['value']
-                    for mapping in mapping_class.mapping_dict:  # pick up applicable mapping rules
+                    for mapping in mapping_class.mapping_dict['rules']:  # pick up applicable mapping rules
                         # predicate = mapping_class.mapping_dict[j]["predicate"]
                         sql = mapping["SQL"]
                         # query = triple
                         # mapping = mapping_class.mapping_dict[j]
                         # answer = uri.translate_sql(sql, triple, mapping, filter_list)  # create a uri translated sql and variables list
                         answer = uri.translate_sql(sql, triple, mapping)  # 2023/6/16  # create a uri translated sql and variables list
-                        re_sql = answer[0]  # answer[0] contains the sql statement
-                        if answer[1]:  # answer[1] contains a dict of uri transformation
-                            for key, value in answer[1].items():
-                                if value != '-' and value != 'plain':
-                                    self.variables_translation_list[key] = value
-                        # if answer[1]:  # answer[1] contains the list of variables
-                        #     for ans in answer[1]:
-                        #         if ans[0] not in checked:
-                        #             trans_uri_list.append(ans)
-                        #             check.append(ans[0])
-                        if re_sql != 'No':
-                            sql_subquery.append(re_sql)
+                        if answer:
+                            re_sql = answer[0]  # answer[0] contains the sql statement
+                            if answer[1]:  # answer[1] contains a dict of uri transformation
+                                for key, value in answer[1].items():
+                                    if value != '-' and value != 'plain':
+                                        self.variables_translation_list[key] = value
+                            # if answer[1]:  # answer[1] contains the list of variables
+                            #     for ans in answer[1]:
+                            #         if ans[0] not in checked:
+                            #             trans_uri_list.append(ans)
+                            #             check.append(ans[0])
+                            if re_sql != None and re_sql != 'No':
+                                sql_subquery.append(re_sql)
                     insert_sql = ''
                     if sql_subquery:
                         # for sub_q in sql_subquery:
@@ -163,13 +165,13 @@ class SparqlQuery:
                         replacement = match
                         for var in var_list_in:
                             try:
-                                # replacement = self.inv_dict_all[match]
-                                uri_table = self.variables_translation_list[var]  # choose the uri transformation table
-                                temp_inv_dict = uri_in.inv_dict[uri_table]  # use individual uri table  # 2023/6/14
-                                try:
-                                    replacement = temp_inv_dict[match]
-                                except KeyError:
-                                    pass
+                                replacement = self.uri.inv_dict_all[match]
+                                # uri_table = self.variables_translation_list[var]  # choose the uri transformation table
+                                # temp_inv_dict = uri_in.inv_dict[uri_table]  # use individual uri table  # 2023/6/14
+                                # try:
+                                #     replacement = temp_inv_dict[match]
+                                # except KeyError:
+                                #     pass
                                 sql_filter_out = re.sub(match, replacement, sql_filter_in)
                             except KeyError:
                                 pass
@@ -302,7 +304,7 @@ class SparqlQuery:
             for match in matches:
                 individual_matches = re.findall(match, query_in)
                 if len(individual_matches) == 1:  # this variable appears only once in the query string and therefore is not used.
-                    clause_matches = re.findall(fr', [^ ]+ AS \b{match}\b ', query_in)
+                    clause_matches = re.findall(fr', [^ ]+ AS \b{match}\b ', query_in)  # 2023/7/31  # This line does not work well for CONCAT(...
                     if len(clause_matches) == 1:
                         query_out = query_out.replace(clause_matches[0], ' ')
                     else:
@@ -312,7 +314,7 @@ class SparqlQuery:
                     pass
                 pass
             return query_out
-        exe_query = remove_unused_variables(exe_query)
+        # exe_query = remove_unused_variables(exe_query)  # 2023/7/31  # temporally disabled
 
         return exe_query  # return the built sql query
 
@@ -426,12 +428,12 @@ class SparqlQuery:
             for element, header in zip(result, headers):
                 converted_element = str(element)
                 try:
-                    # converted_element = uri.uri_dict_all[element]  # use unified table
-                    uri_dict = self.variables_translation_list[header]  # use individual tables
-                    try:
-                        converted_element = uri.uri_dict[uri_dict][element]
-                    except KeyError:
-                        pass
+                    converted_element = uri.uri_dict_all[element]  # use unified table
+                    # uri_dict = self.variables_translation_list[header]  # use individual tables
+                    # try:
+                    #     converted_element = uri.uri_dict[uri_dict][element]
+                    # except KeyError:
+                    #     pass
                 except KeyError:
                     pass
                 row.append(converted_element)

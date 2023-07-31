@@ -1,170 +1,189 @@
-[
-  {
-    "mappingId":	"100: book_title",
-    "subject":
+{
+  "rules":
+  [
     {
-      "type": "Variable",
-      "uri": "PREFIX_book",
-      "content": "",
-      "variable": "VAR10000"
+      "mappingId":	"100: book_title",
+      "subject":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_book",
+        "content": "http://localhost/book_title/book_id/([A-Za-z_][A-Za-z0-9_]*)",
+        "table": "book_title",
+        "column": ["book_id"],
+        "variable": "VAR10000"
+      },
+      "predicate":
+      {
+        "type": "NamedNode",
+        "content": "http://www.w3.org/2000/01/rdf-schema#label",
+        "variable": "VAR10001"
+      },
+      "object":
+      {
+        "type": "NamedNode",
+        "uri": "-",
+        "content": "",
+        "variable": "VAR10002"
+      },
+      "SQL":		"SELECT CONCAT('http://localhost/book_title/book_id/', book_id) AS VAR10000, book_title AS VAR10002 FROM book_title ;"
     },
-    "predicate":
     {
-      "type": "NamedNode",
-      "content": "http://www.w3.org/2000/01/rdf-schema#label",
-      "variable": "VAR10001"
+      "mappingId":	"101: book_type",
+      "subject":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_book",
+        "content": "http://localhost/book_title/book_id/([A-Za-z_][A-Za-z0-9_]*)",
+        "variable": "VAR10100"
+      },
+      "predicate":
+      {
+        "type": "NamedNode",
+        "content": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "variable": "VAR10101"
+      },
+      "object":
+      {
+        "type": "NamedNode",
+        "uri": "-",
+        "content": "http://example.com/Book",
+        "variable": "VAR10102"
+      },
+      "SQL":		"SELECT CONCAT('http://localhost/book_title/book_id/', book_id) AS VAR10100 FROM book_title ;"
     },
-    "object":
     {
-      "type": "NamedNode",
-      "uri": "-",
-      "content": "",
-      "variable": "VAR10002"
+      "mappingId":	"102: book_author",
+      "subject":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_book",
+        "content": "http://localhost/book_title/book_id/([A-Za-z_][A-Za-z0-9_]*)",
+        "column": ["book_id"],
+        "variable": "VAR10200"
+      },
+      "predicate":
+      {
+        "type": "NamedNode",
+        "content": "http://www.wikidata.org/prop/direct/P50",
+        "variable": "VAR10201"
+      },
+      "object":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_author",
+        "content": "http://localhost/author/author_id/([A-Za-z_][A-Za-z0-9_]*)",
+        "column": ["author_id"],
+        "variable": "VAR10202"
+      },
+      "SQL":		"SELECT CONCAT('http://localhost/book_title/book_id/', book_id) AS VAR10200, CONCAT('http://localhost/author/author_id/', author_id) AS VAR10202 FROM book_author ;"
     },
-    "SQL":		"SELECT id AS VAR10000, title AS VAR10002 FROM book_title ;"
+    {
+      "mappingId":	"103: author_name",
+      "subject":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_author",
+        "content": "http://localhost/author/author_id/([A-Za-z_][A-Za-z0-9_]*)",
+        "table": "author",
+        "column": ["author_id"],
+        "variable": "VAR10300"
+      },
+      "predicate":
+      {
+        "type": "NamedNode",
+        "content": "http://www.w3.org/2000/01/rdf-schema#label",
+        "variable": "VAR10301"
+      },
+      "object":
+      {
+        "type": "NamedNode",
+        "uri": "-",
+        "content": "",
+        "variable": "VAR10302"
+      },
+      "SQL":		"SELECT CONCAT('http://localhost/author/author_id/', author_id) AS VAR10300, author_name AS VAR10302 FROM author ;"
+    },
+    {
+      "mappingId":	"104: author_type",
+      "subject":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_author",
+        "content": "",
+        "variable": "VAR10400"
+      },
+      "predicate":
+      {
+        "type": "NamedNode",
+        "content": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "variable": "VAR10401"
+      },
+      "object":
+      {
+        "type": "NamedNode",
+        "uri": "-",
+        "content": "http://example.com/Author",
+        "variable": "VAR10402"
+      },
+      "SQL":		"SELECT CONCAT('http://localhost/author/author_id/', author_id) AS VAR10400 FROM author ;"
+    },
+    {
+      "mappingId":	"105: genre_type",
+      "subject":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_genre",
+        "content": "",
+        "variable": "VAR10500"
+      },
+      "predicate":
+      {
+        "type": "NamedNode",
+        "content": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
+        "variable": "VAR10501"
+      },
+      "object":
+      {
+        "type": "NamedNode",
+        "uri": "-",
+        "content": "http://example.com/Genre",
+        "variable": "VAR10502"
+      },
+      "SQL":		"SELECT CONCAT('http://localhost/genre/genre_id/', genre_id) AS VAR10500 FROM genre ;"
+    },
+    {
+      "mappingId":	"106: genre_label",
+      "subject":
+      {
+        "type": "Variable",
+        "uri": "PREFIX_genre",
+        "content": "http://localhost/genre/genre_id/([A-Za-z_][A-Za-z0-9_]*)",
+        "table": "genre",
+        "column": ["genre_id"],
+        "variable": "VAR10600"
+      },
+      "predicate":
+      {
+        "type": "NamedNode",
+        "content": "http://www.w3.org/2000/01/rdf-schema#label",
+        "variable": "VAR10601"
+      },
+      "object":
+      {
+        "type": "NamedNode",
+        "uri": "-",
+        "content": "",
+        "variable": "VAR10602"
+      },
+      "SQL":		"SELECT CONCAT('http://localhost/genre/genre_id/', genre_id) AS VAR10600, genre_label AS VAR10602 FROM genre ;"
+    }
+  ],
+  "uri": {
+    "PREFIX_book": "book_title/book_id",
+    "PREFIX_author": "author/author_id",
+    "PREFIX_genre": "genre/genre_id"
   },
-  {
-    "mappingId":	"101: book_type",
-    "subject":
-    {
-      "type": "Variable",
-      "uri": "PREFIX_book",
-      "content": "",
-      "variable": "VAR10100"
-    },
-    "predicate":
-    {
-      "type": "NamedNode",
-      "content": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-      "variable": "VAR10101"
-    },
-    "object":
-    {
-      "type": "NamedNode",
-      "uri": "-",
-      "content": "http://example.com/Book",
-      "variable": "VAR10102"
-    },
-    "SQL":		"SELECT id AS VAR10100 FROM book_title ;"
-  },
-  {
-    "mappingId":	"102: book_author",
-    "subject":
-    {
-      "type": "Variable",
-      "uri": "PREFIX_book",
-      "content": "",
-      "variable": "VAR10200"
-    },
-    "predicate":
-    {
-      "type": "NamedNode",
-      "content": "http://www.wikidata.org/prop/direct/P50",
-      "variable": "VAR10201"
-    },
-    "object":
-    {
-      "type": "Variable",
-      "uri": "PREFIX_author",
-      "content": "",
-      "variable": "VAR10202"
-    },
-    "SQL":		"SELECT id AS VAR10200, author_id AS VAR10202 FROM book_author ;"
-  },
-  {
-    "mappingId":	"103: author_name",
-    "subject":
-    {
-      "type": "Variable",
-      "uri": "PREFIX_author",
-      "content": "",
-      "variable": "VAR10300"
-    },
-    "predicate":
-    {
-      "type": "NamedNode",
-      "content": "http://example.com/author_name",
-      "variable": "VAR10301"
-    },
-    "object":
-    {
-      "type": "NamedNode",
-      "uri": "-",
-      "content": "",
-      "variable": "VAR10302"
-    },
-    "SQL":		"SELECT author_id AS VAR10300, name AS VAR10302 FROM author ;"
-  },
-  {
-    "mappingId":	"104: author_type",
-    "subject":
-    {
-      "type": "Variable",
-      "uri": "PREFIX_author",
-      "content": "",
-      "variable": "VAR10400"
-    },
-    "predicate":
-    {
-      "type": "NamedNode",
-      "content": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-      "variable": "VAR10401"
-    },
-    "object":
-    {
-      "type": "NamedNode",
-      "uri": "-",
-      "content": "http://example.com/Author",
-      "variable": "VAR10402"
-    },
-    "SQL":		"SELECT author_id AS VAR10400 FROM author ;"
-  },
-  {
-    "mappingId":	"105: genre_type",
-    "subject":
-    {
-      "type": "Variable",
-      "uri": "PREFIX_genre",
-      "content": "",
-      "variable": "VAR10500"
-    },
-    "predicate":
-    {
-      "type": "NamedNode",
-      "content": "http://www.w3.org/1999/02/22-rdf-syntax-ns#type",
-      "variable": "VAR10501"
-    },
-    "object":
-    {
-      "type": "NamedNode",
-      "uri": "-",
-      "content": "http://example.com/Genre",
-      "variable": "VAR10502"
-    },
-    "SQL":		"SELECT genre_id AS VAR10500 FROM genre ;"
-  },
-  {
-    "mappingId":	"106: genre_name",
-    "subject":
-    {
-      "type": "Variable",
-      "uri": "PREFIX_genre",
-      "content": "",
-      "variable": "VAR10600"
-    },
-    "predicate":
-    {
-      "type": "NamedNode",
-      "content": "http://example.com/genre_label",
-      "variable": "VAR10601"
-    },
-    "object":
-    {
-      "type": "NamedNode",
-      "uri": "-",
-      "content": "",
-      "variable": "VAR10602"
-    },
-    "SQL":		"SELECT genre_id AS VAR10600, genre_label AS VAR10602 FROM genre ;"
+  "uri_function": {
+    "@uri_func_book": "def func(a, b):\n\treturn a+b\n"
   }
-]
+}

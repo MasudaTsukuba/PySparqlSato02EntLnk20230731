@@ -4,6 +4,14 @@
   "variables": [
     {
       "termType": "Variable",
+      "value": "book"
+    },
+    {
+      "termType": "Variable",
+      "value": "book_title"
+    },
+    {
+      "termType": "Variable",
       "value": "author"
     },
     {
@@ -27,6 +35,20 @@
           "object": {
             "termType": "Variable",
             "value": "author"
+          }
+        },
+        {
+          "subject": {
+            "termType": "Variable",
+            "value": "book"
+          },
+          "predicate": {
+            "termType": "NamedNode",
+            "value": "http://www.w3.org/2000/01/rdf-schema#label"
+          },
+          "object": {
+            "termType": "Variable",
+            "value": "book_title"
           }
         },
         {

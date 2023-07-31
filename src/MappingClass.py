@@ -14,7 +14,7 @@ class Mapping:
         json_open_file.close()
 
         self.var_prefix_map = {}  # a dictionary of variables and their corresponding URI transformation tables
-        for mapping in self.mapping_dict:
+        for mapping in self.mapping_dict['rules']:
             subj = mapping['subject']
             if subj['type'] == 'Variable' and subj['uri'] != 'plain':
                 self.var_prefix_map[subj['variable']] = subj['uri']
