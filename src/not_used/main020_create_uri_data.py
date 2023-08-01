@@ -48,6 +48,6 @@ from src.UriClass import Uri
 # pass
 
 if __name__ == '__main__':
-    path = PathClass('')
-    uri = Uri(path, 'data_set2', 'uri')
-    uri.create_uri_db()
+    path = PathClass('data_set2')
+    uri = Uri(path)
+

@@ -1,3 +1,8 @@
+# main014_get_book_date.py
+# get uri of books and their publication dates registered in WikiData
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from SPARQLWrapper import SPARQLWrapper, JSON
 import csv
 

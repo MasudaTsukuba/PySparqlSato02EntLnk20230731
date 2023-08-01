@@ -1,7 +1,9 @@
+# DatabaseClass.py
 # class for handling a relational database
 # and execute sql query against the database
 # 2023/6/1, Tadashi Masuda
 # Amagasa Laboratory, University of Tsukuba
+
 import os
 import sqlite3
 import mysql.connector
@@ -11,7 +13,17 @@ import csv
 
 
 class DataBase:
-    def __init__(self, path, db_name, dbms='sqlite3', port=8080):
+    """class for handling a relational database
+
+    :ivar path: Path to files
+    :type path: PathClass
+    :ivar db_name: Name of database
+    :type db_name: basestring
+    :ivar dbms: database management system (sqlite3, postgresql, mysql)
+    :ivar port: Port number of database
+    :type port: int
+    """
+    def __init__(self, path, db_name, dbms='sqlite3', port=8080):  # constructor
         self.path = path
         self.dataset_csv_path = path.dataset_path+'/csv/'
         self.database_path = self.dataset_csv_path+db_name
@@ -49,10 +61,24 @@ class DataBase:
         self.sqls = None  # list of sqls
 
     def close(self):
+        """Close the database
+
+        Args:
+            None
+        Returns:
+            None
+        """
         self.conn.close()
 
-    # execute sql query against a relational database
     def execute(self, sql):
+        """execute sql query against a relational database.
+
+        :param sql: SQL query string.
+        :type sql: string.
+        :return:
+            results: 2D list of strings,
+            headers: 1D list for column name strings.
+        """
         # print(sql)  # debug  # 2023/7/21
         xxx = self.cur.execute(sql)
         zzz = self.cur.rowcount
@@ -62,12 +88,24 @@ class DataBase:
         return results, headers
 
     def create_database(self, tables):  # create a sqlite3 database
+        """create a sqlite3 database
+        :param tables: tables to be created.
+        :type tables: list[str].
+
+        :return: None
+        """
         self.tables = tables
         conn = sqlite3.connect(self.database_path)
         conn.commit()
         conn.close()
 
-    def create_table(self, sqls):  # create sqlite3 tables
+    def create_table(self, sqls):  #
+        """create sqlite3 tables
+
+        :param sqls: SQLs for creating databse tables.
+        :type sqls: list[str]
+        :return: None
+        """
         self.sqls = sqls
         conn = sqlite3.connect(self.database_path)
         cursor = conn.cursor()
@@ -117,7 +155,15 @@ class DataBase:
         conn.commit()
         conn.close()
 
-    def insert_data(self, path_tables, sqls):  # insert data into sqlite3 tables
+    def insert_data(self, path_tables, sqls):  #
+        """insert data into sqlite3 tables
+
+        :param path_tables: Path to data files
+        :type path_tables: list[str]
+        :param sqls: SQLs to be executed
+        :type sqls: list[str]
+        :return: None
+        """
         conn = sqlite3.connect(self.database_path)
         cursor = conn.cursor()
         # tables = [

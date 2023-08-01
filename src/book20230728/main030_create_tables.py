@@ -1,13 +1,20 @@
+# main030_create_tables.py
+# create postgresql tables
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 import psycopg2
-import csv
+# import csv
 import os
 
-postgres_username = os.environ.get('POSTGRES_USERNAME')
+postgres_username = os.environ.get('POSTGRES_USERNAME')  # user name is registered as an environmental variable
 postgres_password = os.environ.get('POSTGRES_PASSWORD')
 postgres_username = 'masuda'
 postgres_password = 'masuda'
 cnx = psycopg2.connect(user=postgres_username, password=postgres_password, host='localhost', port=5432, database='book20230728')
 cursor = cnx.cursor()
+
+# book_title table
 sql_drop_book_title = '''
 DROP TABLE IF EXISTS book_title CASCADE;
 '''
@@ -17,6 +24,7 @@ CREATE TABLE book_title (book_id VARCHAR(255) PRIMARY KEY, book_title VARCHAR(25
 '''
 cursor.execute(sql_create_book_title)
 
+# author table
 sql_drop_author = '''
 DROP TABLE IF EXISTS author CASCADE;
 '''
@@ -26,6 +34,7 @@ CREATE TABLE author (author_id VARCHAR(255) PRIMARY KEY, author_name VARCHAR(255
 '''
 cursor.execute(sql_create_author)
 
+# genre table
 sql_drop_genre = '''
 DROP TABLE IF EXISTS genre CASCADE;
 '''
@@ -35,6 +44,7 @@ CREATE TABLE genre (genre_id VARCHAR(255) PRIMARY KEY, genre_label VARCHAR(255))
 '''
 cursor.execute(sql_create_genre)
 
+# book_author table
 sql_drop_book_author = '''
 DROP TABLE IF EXISTS book_author;
 '''
@@ -49,6 +59,7 @@ CREATE TABLE book_author (book_id VARCHAR(255), author_id VARCHAR(255));
 '''
 cursor.execute(sql_create_book_author)
 
+# book_date table
 sql_drop_book_date = '''
 DROP TABLE IF EXISTS book_date;
 '''
@@ -61,6 +72,7 @@ CREATE TABLE book_date (book_id VARCHAR(255), pub_date VARCHAR(255));
 '''
 cursor.execute(sql_create_book_date)
 
+# book_genre table
 sql_drop_book_genre = '''
 DROP TABLE IF EXISTS book_genre;
 '''
@@ -76,6 +88,7 @@ CREATE TABLE book_genre (book_id VARCHAR(255), genre_id VARCHAR(255));
 cursor.execute(sql_create_book_genre)
 cnx.commit()
 
+# book_description table
 sql_drop_book_description = '''
 DROP TABLE IF EXISTS book_description;
 '''

@@ -1,5 +1,5 @@
-# main030_execute_query for execute sparql queries
-# for npd20230626 dataset
+# npd20230626 / main030_execute_query.py
+# for execute sparql queries against npd20230626 dataset
 # 2023/7/3, Tadashi Masuda
 # Amagasa Laboratory, University of Tsukuba
 
@@ -12,7 +12,9 @@ if __name__ == '__main__':
     path = PathClass('npd20230626')
     path.set_mapping_file('mapping.json')
     execute = ExecuteQueryClass(path, 'npd20230626', dbms='postgres')
-    query = 'q1.txt'  # uncomment to select a query
+
+    # uncomment to select a query
+    query = 'q1.txt'
     # query = 'q2a.txt'
     # query = 'q2b.txt'
     # query = 'q2c.txt'
@@ -55,6 +57,6 @@ if __name__ == '__main__':
     # query = 'npd_q08e.txt'
     # query = 'npd_q08.txt'
     # query = 'npd_q08_order.txt'
-    TimingClass.set_file_name('timing.csv', time_stamp=True)
-    execute.execute_query(query)
-    TimingClass.store_timing()
+    TimingClass.set_file_name('timing.csv', time_stamp=True)  # measure the execution time
+    execute.execute_query(query)  # execute the query
+    TimingClass.store_timing()  # terminate the measurement

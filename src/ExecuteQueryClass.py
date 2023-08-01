@@ -1,7 +1,8 @@
-# ExecuteQueryClass for execute sparql queries
-# 2023/6/14, Tadashi Masuda
-# Amagasa Laboratory, University of Tsukuba
-
+"""ExecuteQueryClass.py
+for execute sparql queries
+2023/6/14, Tadashi Masuda
+Amagasa Laboratory, University of Tsukuba
+"""
 import subprocess
 from src.DatabaseClass import DataBase
 from src.MappingClass import Mapping
@@ -12,13 +13,29 @@ from src.TimingClass import TimingClass
 
 
 class ExecuteQueryClass:
+    """
+    A class for execute sparql queries
+
+    :ivar path: Path to files
+    :type path: PathClass
+    :ivar db_name: Name of database
+    :type db_name: basestring
+    :ivar dbms: database management system (sqlite3, postgresql, mysql)
+    :ivar port: Port number of database
+    :type port: int
+    """
     def __init__(self, path, db_name='landmark.db', dbms='sqlite3', port=8080):
         self.path = path
         self.db_name = db_name
         self.dbms = dbms
         self.port = port
 
-    def query2json(self):  # convert sparql query string into json format
+    def query2json(self):  #
+        """convert sparql query string into json format
+
+        :param None:
+        :return: Path to JSON file.
+        """
         json_file = self.path.input_query_file.replace('.txt', '.json')  # output json file name
         command = self.path.working_path + '/action_folder/node_modules/sparqljs/bin/sparql-to-json'
         cp = subprocess.run([command, '--strict', self.path.common_query_path + self.path.input_query_file],
@@ -30,7 +47,14 @@ class ExecuteQueryClass:
             f.write(cp.stdout)
         return self.path.common_query_path + json_file
 
-    def execute_query(self, input_file):  # , tables):  # execute a sparql query
+    def execute_query(self, input_file: str) -> list[list[str]]:  # , tables):  #
+        """execute a sparql query
+
+        :param input_file: Input file containing SPARQL query
+        :type input_file: str.
+        :return: SPARQL results
+        :rtype: list[list[str]].
+        """
         total_execution_timing = TimingClass(input_file, 'total_execution')
         # total_timing.record_start()
         # path = PathClass('data_set2')
@@ -40,8 +64,9 @@ class ExecuteQueryClass:
         # self.path.set_mapping_file('mapping_revised.json')
         mapping_class = Mapping(self.path.mapping_file_path)  # instance of MappingClass
         # ------ ユーザから得て, JSON形式に変換したSPARQLを取り込む --------
-        uri = Uri(self.path)  # instance of UriClass
+        uri = Uri(self.path, mapping_class)  # instance of UriClass
         # uri.read_entity_linking(tables)  # 2023/6/5
+
         read_entity_linking_from_csv_timing = TimingClass(input_file, 'read_entity_linking_from_csv')
         uri.read_entity_linking_from_csv()  # 2023/6/14
         read_entity_linking_from_csv_timing.record_end()
@@ -76,7 +101,12 @@ class ExecuteQueryClass:
         total_execution_timing.record_end()
         return sparql_results  # for pytests
 
-    def execute_sql(self, exe_query):  # direct execution of sql  # for debug  # 2023/7/27
+    def execute_sql(self, exe_query: str):  # direct execution of sql for debug  # 2023/7/27
+        """direct execution of sql for debug
+
+        :param exe_query: SQL query string
+        :return: None
+        """
         data_base = DataBase(self.path, self.db_name, dbms=self.dbms, port=self.port)  # instance of DatabaseClass  # 2023/6/1
 
         sql_results, headers = data_base.execute(exe_query)  # execute sql query

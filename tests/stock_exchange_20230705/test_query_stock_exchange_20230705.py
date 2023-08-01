@@ -1,3 +1,7 @@
+# stock_exchange_20230705 / test_query_stock_exchange_20230705.py
+# 2023/7/5, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from src.ExecuteQueryClass import ExecuteQueryClass
 from src.PathClass import PathClass
 

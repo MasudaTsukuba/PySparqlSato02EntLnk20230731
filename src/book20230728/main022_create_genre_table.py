@@ -1,3 +1,8 @@
+# main020_create_genre_table.py
+# create a CSV table for genre URI and genre label
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 import csv
 
 genre_set = set()

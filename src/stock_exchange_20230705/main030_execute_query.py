@@ -1,5 +1,5 @@
-# main030_execute_query for execute sparql queries
-# for npd20230626 dataset
+# stock_exchange_20230705 / main030_execute_query.py
+# for execute sparql queries against npd20230626 dataset
 # 2023/7/3, Tadashi Masuda
 # Amagasa Laboratory, University of Tsukuba
 

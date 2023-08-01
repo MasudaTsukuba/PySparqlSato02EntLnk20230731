@@ -1,3 +1,7 @@
+# dataset20230609 / test_query20230609.py
+# 2023/6/9, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from src.ExecuteQueryClass import ExecuteQueryClass
 from src.PathClass import PathClass
 

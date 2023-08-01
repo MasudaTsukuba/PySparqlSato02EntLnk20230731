@@ -1,13 +1,15 @@
+# main010_create_db.py
 # create landmark.db in data_set2 folder
 # 2023/6/1, Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
 
 from src.PathClass import PathClass
 from src.DatabaseClass import DataBase
 
 
 if __name__ == '__main__':
-    path = PathClass('data_set2')
-    db = DataBase(path, 'landmark.db')
+    path = PathClass('data_set2')  # set the path to the dataset
+    db = DataBase(path, 'landmark.db')  # set the database instance
     tables = [
         "building", "building_country",
         "hotel", "hotel_country",
@@ -15,7 +17,7 @@ if __name__ == '__main__':
         "heritage", "heritage_country",
         "country"
     ]
-    db.create_database(tables)
+    db.create_database(tables)  # create database
     sqls = [
         "CREATE TABLE building (building_id VARCHAR(255) PRIMARY KEY, name VARCHAR(255), description VARCHAR(255));",
         "CREATE TABLE building_country (building_id VARCHAR(255), country_id VARCHAR(255), FOREIGN KEY (building_id) REFERENCES building(building_id), FOREIGN KEY (country_id) REFERENCES country(country_id));",
@@ -27,7 +29,7 @@ if __name__ == '__main__':
         "CREATE TABLE heritage_country (heritage_id VARCHAR(255), country_id VARCHAR(255), FOREIGN KEY (heritage_id) REFERENCES heritage(heritage_id), FOREIGN KEY (country_id) REFERENCES country(country_id));",
         "CREATE TABLE country (country_id VARCHAR(255) PRIMARY KEY, country_name VARCHAR(255), country_description VARCHAR(255));"
     ]
-    db.create_table(sqls)
+    db.create_table(sqls)  # create tables
     path_tables = [
         "Building/Building", "Building/Building_Country",
         "Hotel/Hotel", "Hotel/Hotel_Country",
@@ -46,4 +48,4 @@ if __name__ == '__main__':
         "INSERT INTO heritage_country (heritage_id, country_id) VALUES (?, ?)",
         "INSERT INTO country (country_id, country_name, country_description) VALUES (?, ?, ?)"
     ]
-    db.insert_data(path_tables, sqls)
+    db.insert_data(path_tables, sqls)  # insert data in CSV files into database tables

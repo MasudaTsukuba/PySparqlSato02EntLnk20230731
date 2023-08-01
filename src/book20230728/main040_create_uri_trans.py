@@ -1,5 +1,11 @@
+# main040_create_uri_trans.py
+# read data from CSV files and create PREFIX files for URI transformation
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 import csv
 
+# book
 book_set = set()
 book_list = []
 with open('../../data/book20230728/csv/book_title.csv') as csvfile:
@@ -21,6 +27,7 @@ with open('../../data/book20230728/uri/PREFIX_book.csv', 'w') as csvout:
     csv_writer = csv.writer(csvout)
     csv_writer.writerows(book_list)
 
+# author
 author_set = set()
 author_list = []
 with open('../../data/book20230728/csv/author_label.csv') as csvfile:
@@ -42,6 +49,7 @@ with open('../../data/book20230728/uri/PREFIX_author.csv', 'w') as csvout:
     csv_writer = csv.writer(csvout)
     csv_writer.writerows(author_list)
 
+# genre
 genre_set = set()
 genre_list = []
 with open('../../data/book20230728/csv/genre_label.csv') as csvfile:
@@ -62,4 +70,3 @@ with open('../../data/book20230728/csv/genre_label.csv') as csvfile:
 with open('../../data/book20230728/uri/PREFIX_genre.csv2', 'w') as csvout:
     csv_writer = csv.writer(csvout)
     csv_writer.writerows(genre_list)
-

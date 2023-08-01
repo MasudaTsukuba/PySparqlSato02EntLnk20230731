@@ -1,4 +1,5 @@
-# UriClass for handling uri transformation
+# UriClass.py
+# for handling uri transformation
 # 2023/6/14, Tadashi Masuda
 # Amagasa Laboratory, University of Tsukuba
 
@@ -8,6 +9,7 @@ import re
 import sqlite3
 import spacy
 import csv
+from RestrictedPython import compile_restricted, safe_builtins
 # import json
 # from spacy.pipeline import EntityLinker
 # from src.DatabaseClass import DataBase
@@ -15,9 +17,10 @@ import csv
 
 
 class Uri:
-    def __init__(self, path):
+    def __init__(self, path, mapping=None):
         self.path = path
         self.uri_path = self.path.dataset_path + '/uri/'  # ./data_set2/uri
+        self.mapping = mapping
         self.uri_dict = {}  # str->uri dictionary
         self.inv_dict = {}  # uri->str dictionary
         self.uri_dict_all = {}
@@ -41,6 +44,18 @@ class Uri:
         # self.entity_linking_file = None
         self.entity_linking_file = self.uri_path+'entity_linking.db'
         pass
+
+    def inv_func(self, value):
+        uri_func = self.mapping.mapping_dict['uri']['_global']
+        code = self.mapping.mapping_func[uri_func]  # get the uri transformation code
+        uri_variables = {}  # returned 'uri_results' will be stored in this dict
+        code_formatted = code.format(f'"{value}"')  # apply argument
+        restricted_globals = {'__builtins__': safe_builtins}  # disable 'import' statement in the code
+        restricted_code = compile_restricted(code_formatted, filename='<string>', mode='exec')  # compile the code
+        # exec(code_formatted, globals(), uri_variables)  # not secure execution
+        exec(restricted_code, restricted_globals, uri_variables)  # RestrictedPython for secure execution # 2023/8/1
+        converted_element = uri_variables['local_uri']  # get the result
+        return converted_element
 
     # def translate_sql(self, sql: str, triple, mapping, filter_list):  # uri translation: return [sql, trans_uri]
     def translate_sql(self, sql: str, triple, mapping):  # 2023/6/16  # uri translation: return [sql, trans_uri]
@@ -79,6 +94,13 @@ class Uri:
             return re_sql
 
         def create_trans_uri(triple, sql, key):
+            """
+
+            :param triple:
+            :param sql:
+            :param key: 'subject', 'object'
+            :return:
+            """
             value = triple[key]['value']  # get the name of the variable
             if sql:
                 sql_replace = sql.replace(mapping[key]['variable'], value)  # replace the variable in sql statement
@@ -126,6 +148,10 @@ class Uri:
                 try:
                     sql_value = self.inv_dict_all[value]
                 except KeyError:
+                    try:
+                        sql_value = self.inv_func(value)
+                    except:
+                        pass
                     pass
                 # try:  # 2023/6/14  # use individual PREFIX files
                 #     inv_dict = self.inv_dict[uri_function]

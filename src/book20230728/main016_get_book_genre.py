@@ -1,3 +1,8 @@
+# main016_get_book_genre.py
+# get uri of books and their genres with genre names registered in WikiData
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from SPARQLWrapper import SPARQLWrapper, JSON
 import csv
 

@@ -1,3 +1,8 @@
+# data_set2 / main030_execute_query.py
+# execute SPARQL query
+# 2023/6/1, Tadashi masuda
+# Amagasa Laboratory, University of Tsukuba
+
 # import os
 # import subprocess
 from src.ExecuteQueryClass import ExecuteQueryClass
@@ -45,15 +50,20 @@ from src.PathClass import PathClass
 
 
 if __name__ == '__main__':
-    path = PathClass('data_set2')
-    path.set_mapping_file('mapping_revised.json')
-    execute = ExecuteQueryClass(path)
+    path = PathClass('data_set2')  # set the path to the dataset
+    path.set_mapping_file('mapping_revised.json')  # specify the mapping file
+    execute = ExecuteQueryClass(path)  # create an instance to prepare for execution
+
     query = 'q1.txt'
     query = 'q1_hotel_name_only.txt'  # q1 without country, only hotel id and name
     query = 'q1_hotel_country_id.txt'  # q1 wit country_id, but without country name
+    # query = 'q1_pred_hotel.txt'
+    # query = 'q1_pred_building.txt'
+    # query = 'q1_pred_museum.txt'
+    # query = 'q1_pred_heritage.txt'
     query = 'q1_pred_hotel_get.txt'  # predicate for rdf:type is variable
     query = 'q1_pred_get_hotel.txt'  # return predicate value
-    # query = 'q2_MoveableFacility.txt'
+    # query = 'q2.txt'
     # query = 'q3a.txt'
     # query = 'q3b.txt'
     # query = 'q4.txt'
@@ -61,10 +71,6 @@ if __name__ == '__main__':
     # query = 'q6.txt'
     # query = 'q7.txt'
     query = 'q7b.txt'
-    # query = 'q1_pred_hotel.txt'
-    # query = 'q1_pred_building.txt'
-    # query = 'q1_pred_museum.txt'
-    # query = 'q1_pred_heritage.txt'
     # query = 'query_type_object20230518.txt'
     # query = 'query_extract_hotels20230519.txt'
     # query = 'query_extract_hotels_with_name20230519.txt'
@@ -75,4 +81,4 @@ if __name__ == '__main__':
     # query = 'q5b.txt'
     # query = 'q5c.txt'
     # query = 'query_description.txt'
-    execute.execute_query(query)
+    execute.execute_query(query)  # execute the query

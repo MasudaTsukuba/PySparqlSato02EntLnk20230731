@@ -1,3 +1,7 @@
+# npd20230626 / test_query20230626.py
+# 2023/6/26, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from src.ExecuteQueryClass import ExecuteQueryClass
 from src.PathClass import PathClass
 

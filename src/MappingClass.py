@@ -1,12 +1,15 @@
-# class for handling mapping rules
-# 2023/6/1, Tadashi masuda
-# Amagasa Laboratory, University of Tsukuba
-
+""""MappingClass.py
+A class for handling mapping rules
+2023/6/1, Tadashi masuda
+Amagasa Laboratory, University of Tsukuba
+"""
 import json
 import os.path
 
 
 class Mapping:
+    """A class for handling mapping rules
+    """
     def __init__(self, path):
         mapping_uri = path  # './data_set2/mapping/mapping_gav.json'
         # マッピングデータの取り込み

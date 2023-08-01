@@ -183,7 +183,7 @@
     "author/author_id": "PREFIX_author",
     "genre/genre_id_not_used": "PREFIX_genre",
     "genre/genre_id": "uri_genre.py",
-    "@": "global_to_local.py"
+    "_global": "global_to_local.py"
   },
   "uri_function": {
     "@uri_func_genre": "def func(a, b):\n\treturn a+b\n"

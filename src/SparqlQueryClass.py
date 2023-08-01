@@ -1,17 +1,22 @@
-# SparqlQueryClass for handling sparql queries
-# 2023/6/14, Tadashi Masuda
-# Amagasa Laboratory, University of Tsukuba
+"""SparqlQueryClass.py
+A class for handling sparql queries
+2023/6/14, Tadashi Masuda
+Amagasa Laboratory, University of Tsukuba
+"""
 
 import json
 import re
 import sys
-
+from RestrictedPython import compile_restricted, safe_builtins
 
 # import sqlite3
 # from UriClass import Uri
 
 
 class SparqlQuery:
+    """A class for handling sparql queries
+
+    """
     def __init__(self, query_uri, uri, mapping):
         # ------ ユーザから得て, JSON形式に変換したSPARQLを取り込む --------
         # self.var_list = None  # list of variables
@@ -40,6 +45,11 @@ class SparqlQuery:
         # self.variables_uri_list = {}  # dictionary for indicating the correspondence of variables and their uri transformations
 
     def convert_to_sql(self, mapping_class):  # sparql to intermediate sql
+        """sparql to intermediate sql
+
+        :param mapping_class:
+        :return:
+        """
         def create_var_list(query_dict):  # create a list of variables in sparql query
             # 出力する変数リストを作成
             var_list = []
@@ -319,7 +329,14 @@ class SparqlQuery:
 
         return exe_query  # return the built sql query
 
-    def convert_to_rdf(self, uri, results, headers):  # convert the sql results into sparql results using uri_dict_all table
+    def convert_to_rdf(self, uri, results, headers):  #
+        """convert the sql results into sparql results using uri_dict_all table
+
+        :param uri: Instance of UriClass having tranfsormation info
+        :param results: SQL results in 2D list
+        :param headers: List of column names
+        :return: SPARQL query results in 2D list of strings
+        """
         # --------- SQLクエリ結果をSPARQLクエリ結果に合わせるため、必要に応じて文字列->URIに変換する ----------------------------------
         # def create_trans_uri_list(trans_uri_list):
         #     tmp = []
@@ -328,7 +345,7 @@ class SparqlQuery:
         #             tmp.append(i)
         #     return tmp
         # trans_uri_list = create_trans_uri_list(self.trans_uri_list)
-        #
+
         # def prepare_sql_tquery(uri):
         #     def g(uri_mapping, b_trans, a_trans):
         #         sql = str(uri_mapping['SQL'])  # "SQL":"SELECT ID AS A0, URI_Build AS A1 FROM PREFIX_Build"
@@ -365,7 +382,7 @@ class SparqlQuery:
         #             r_list[y] = i0  # replace the list of variables
         #     return sql_tquery, r_list
         # sql_tquery, r_list = prepare_sql_tquery(self.uri)
-        #
+
         # def uri_db(uri_database, var_list):
         #     c = sqlite3.connect(uri_database)
         #     c.execute('DROP TABLE Result;')  # ####################2023/3/20
@@ -421,42 +438,45 @@ class SparqlQuery:
         #     sql_results = cursor.execute(exe_query).fetchall()
         #     return sql_results
         # sparql_results = build_query(cu, r_list, sql_tquery)
-        #
+
         # sparql_results = [list(pp) for pp in sparql_results]  # convert to a list
-        sparql_results = []
-        for result in results:
-            row = []
-            for element, header in zip(result, headers):
-                converted_element = str(element)
-                if converted_element.find('http://localhost/') >= 0:
+        sparql_results = []  # results to be returned
+        for result in results:  # process each line of SQL results
+            row = []  # row to be returned
+            for element, header in zip(result, headers):  # process each column of the row
+                converted_element = str(element)  # conver to a string
+                if converted_element.find('http://localhost/') >= 0:  # if the element is a local URI
                     try:
-                        converted_element = uri.uri_dict_all[element]  # use unified table
-                        # uri_dict = self.variables_translation_list[header]  # use individual tables
+                        converted_element = uri.uri_dict_all[element]  # use unified table for URI transformation
+                        # uri_dict = self.variables_translation_list[header]  # use individual tables for URI transformation
                         # try:
                         #     converted_element = uri.uri_dict[uri_dict][element]
-                        # except KeyError:
+                        # except KeyError:  # transformation not found in the dict
                         #     pass
-                    except KeyError:
+                    except KeyError:  # URI transformation not found in the dict, then try URI transformation function
                         table_column_matches = re.findall(r'http://localhost/([A-Za-z_][A-Za-z0-9_]*/[A-Za-z_][A-Za-z0-9_]*)/[A-Za-z_][A-Za-z0-9_]*', converted_element)
-                        if len(table_column_matches) == 1:
-                            uri_func = self.mapping.mapping_dict['uri'][table_column_matches[0]]
+                        if len(table_column_matches) == 1:  # matches must be only one, otherwise something is wrong
+                            uri_func = self.mapping.mapping_dict['uri'][table_column_matches[0]]  # ex. 'genre/genre_id' -> uri_genre.py
                             try:
-                                code = self.mapping.mapping_func[uri_func]
-                                uri_variables = {}
-                                code_formatted = code.format(f'"{converted_element}"')
-                                exec(code_formatted, globals(), uri_variables)
-                                converted_element = uri_variables['uri_results']
+                                code = self.mapping.mapping_func[uri_func]  # get the uri transformation code
+                                uri_variables = {}  # returned 'uri_results' will be stored in this dict
+                                code_formatted = code.format(f'"{converted_element}"')  # apply argument
+                                restricted_globals = {'__builtins__': safe_builtins}  # disable 'import' statement in the code
+                                restricted_code = compile_restricted(code_formatted, filename='<string>', mode='exec')  # compile the code
+                                # exec(code_formatted, globals(), uri_variables)  # not secure execution
+                                exec(restricted_code, restricted_globals, uri_variables)  # RestrictedPython for secure execution # 2023/8/1
+                                converted_element = uri_variables['uri_results']  # get the result
                                 pass
-                            except KeyError:
+                            except KeyError:  # in case the uri transformation function is not found / registered
                                 pass
                             pass
                         pass
-                row.append(converted_element)
-            sparql_results.append(row)
-        return sparql_results
+                row.append(converted_element)  # append the converted URI to the row
+            sparql_results.append(row)  # append the row to the results
+        return sparql_results  # return the 2D results
 
-    def check_triples_cycle(self):  # check whether the triples in a query contains cycles
-        def is_cyclic(graph):
+    def check_triples_cycle(self):  # check whether the triples in a query contains cycles for deleting unnecessary clauses
+        def is_cyclic(graph):  # code suggested by ChatGPT
             def dfs(node, visited, parent):
                 visited.add(node)
                 for triple in graph:
@@ -484,13 +504,13 @@ class SparqlQuery:
         result = is_cyclic(rdf_graph)
         pass
 
-    def set_ranks_for_triples(self):
-        triples = self.query_in_json['where'][0]['triples']
+    def set_ranks_for_triples(self):  # set ranks for each triple in order to set priorities to execute the triples
+        triples = self.query_in_json['where'][0]['triples']  # all the triples in SPARQL query
         rdf_graph = []
         for triple in triples:
-            graph_tuple = (triple['subject']['value'], triple['object']['value'])
+            graph_tuple = (triple['subject']['value'], triple['object']['value'])  # append the subject-object pair
             rdf_graph.append(graph_tuple)
-        triples_score = [0 for i in range(len(rdf_graph))]
+        triples_score = [0 for i in range(len(rdf_graph))]  # for each triple
         updated = True
         while updated:
             updated = False
@@ -498,74 +518,73 @@ class SparqlQuery:
                 subj, obj = item
                 for index2, item2 in enumerate(rdf_graph):
                     subj2, obj2 = item2
-                    if index != index2:
-                        if subj2 == obj:
+                    if index != index2:  # these two are different triples
+                        if subj2 == obj:  # triples are chained
                             if triples_score[index] < triples_score[index2] + 1:
-                                triples_score[index] = triples_score[index2] + 1
+                                triples_score[index] = triples_score[index2] + 1  # index has higher score than index2
                                 updated = True
-
         pass
         return triples_score
 
-    def order_triples_in_query(self):
+    def order_triples_in_query(self):  # order triples according to the priority
         triples_score = self.set_ranks_for_triples()
-        ordered_query_in_json = self.query_in_json
-        triples = self.query_in_json['where'][0]['triples']
+        ordered_query_in_json = self.query_in_json  # copy input query to output query
+        triples = self.query_in_json['where'][0]['triples']  # get all the triples in the SPARQL query
         triples_with_score = []
         for score, triple in zip(triples_score, triples):
-            triples_with_score.append([score, triple])
-        sorted_triples_with_score = sorted(triples_with_score, key=lambda x: x[0], reverse=True)
+            triples_with_score.append([score, triple])  # pair the score and the triple
+        sorted_triples_with_score = sorted(triples_with_score, key=lambda x: x[0], reverse=True)  # sort by the score
         sorted_triples = []
         for element in sorted_triples_with_score:
-            sorted_triples.append(element[1])
-        ordered_query_in_json['where'][0]['triples'] = sorted_triples
+            sorted_triples.append(element[1])  # extract the triples ordered by the scores
+        ordered_query_in_json['where'][0]['triples'] = sorted_triples  # replace the triples
         pass
         return ordered_query_in_json
 
-    def where_to_join_conversion(self, exe_query):  # convert where clause in sql to join  # 2023/7/27
-        temp_query = exe_query
+    def where_to_join_conversion(self, exe_query):  # convert where clause in sql to join  # 2023/7/27 not yet completed
+        temp_query = exe_query  # get SQL query and modify it
         matches_root = re.findall(r'FROM (\(.*\));', exe_query)
-        if len(matches_root) != 1:
+        if len(matches_root) != 1:  # FROM ... part should appear only once
             print('Some thing is wrong in exe_query. ')
             sys.exit()
         else:
-            split_natural_join = matches_root[0].split('NATURAL JOIN')
+            split_natural_join = matches_root[0].split('NATURAL JOIN')  # split with 'NATURAL JOIN'
             for natural_join_element in split_natural_join:
-                split_union = natural_join_element.split('UNION')
+                split_union = natural_join_element.split('UNION')  # split with 'UNION'
                 for split_union_element in split_union:
                     matches_select = re.findall(r'\(SELECT (.*?) FROM (.*?) WHERE (.*?)\)', split_union_element)
                     if len(matches_select) != 1:
                         print('Some thing wrong in sql query 2')
                         sys.exit()
                     else:
-                        match_select = matches_select[0]
-                        select_clause = match_select[0]
-                        matches_select_clause = re.findall(r'(.*? as var\d)[, ]*', select_clause)
-                        table_clause = match_select[1]
-                        matches_table_clause = re.findall(r'"(.*?)" as (.+?)[, ]*?', table_clause)
-                        where_clause = match_select[2]
-                        where_clause_split = where_clause.split(' AND ')
+                        match_select = matches_select[0]  # matches_select has only one element
+                        select_clause = match_select[0]  # the first is variable following 'SELECT'
+                        matches_select_clause = re.findall(r'(.*? as var\d)[, ]*', select_clause)  # extract individual variables
+                        table_clause = match_select[1]  # tables
+                        matches_table_clause = re.findall(r'"(.*?)" as (.+?)[, ]*?', table_clause)  # extract individual tables
+                        where_clause = match_select[2]  # where clauses
+                        where_clause_split = where_clause.split(' AND ')  # split with 'AND'
                         empty_set = set()
-                        equivalent_groups = [empty_set]
+                        equivalent_groups = [empty_set]  # variables connect with = are put into the same group
                         first = True
-                        for where_clause_element in where_clause_split:
-                            terms = where_clause_element.split (' = ')
-                            if first:
-                                equivalent_groups[0].add(terms[0])
+                        for where_clause_element in where_clause_split:  # each expression in where clause
+                            terms = where_clause_element.split (' = ')  # consider only =
+                            if first:  # initial relation, set is empty
+                                equivalent_groups[0].add(terms[0])  # add the variable to the set
                                 equivalent_groups[0].add(terms[1])
                                 first = False
                             else:
                                 found = False
                                 for equivalent_group in equivalent_groups:
-                                    if terms[0] in equivalent_group:
-                                        equivalent_group.add(terms[1])
+                                    if terms[0] in equivalent_group:  # term[0] is already in the group
+                                        equivalent_group.add(terms[1])  # then
                                         found = True
                                     elif terms[1] in equivalent_group:
                                         equivalent_group.add(terms[0])
                                         found = True
                                     else:
                                         pass
-                                if not found:
+                                if not found:  # create a new group and register the terms in this new group
                                     equivalent_group = set()
                                     equivalent_group.add(terms[0])
                                     equivalent_group.add(terms[1])
@@ -573,17 +592,17 @@ class SparqlQuery:
 
                         sql_element = 'SELECT $VAR FROM '
                         for match_table_clause in matches_table_clause:
-                            table = match_table_clause[0]
-                            alias = match_table_clause[1]
+                            table = match_table_clause[0]  # real name
+                            alias = match_table_clause[1]  # alias
                             sql_element += f'"{table}" AS {alias} '
                             pass
                             var_list = []
                             for match_sql_clause in matches_select_clause:
-                                matched_var = re.findall(rf'({alias}."c\d")', match_sql_clause)
+                                matched_var = re.findall(rf'({alias}."c\d")', match_sql_clause)  # ex. A."c0"
                                 if matched_var:
                                     var_list.append(match_sql_clause)
                                     pass
                         pass
                     pass
-        pass
+        pass  # not completed yet
         return temp_query

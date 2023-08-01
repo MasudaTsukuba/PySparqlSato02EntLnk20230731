@@ -1,18 +1,30 @@
-# class for handling the output of sparql queries into a file
-# 2023/6/1, Tadashi Masuda
-# Amagasa Laboratory, University of Tsukuba
+"""OutputClass.py
+A class for handling the output of sparql queries into a file
+2023/6/1, Tadashi Masuda
+Amagasa Laboratory, University of Tsukuba
+"""
 
 import csv
 
 
 # write the sparql query results into a file
 class Output:
+    """A class for handling the output of sparql queries into a file
+
+    """
     def __init__(self):
         pass
 
     # 結果の表示, output.csvに出力される
     @staticmethod
     def save_file(output, results, headers):
+        """Save the SPARQL results into a CSV file
+
+        :param output: Output file name
+        :param results: Sparql results
+        :param headers: List of column names
+        :return: None
+        """
         output = output.replace('.txt', '.csv')
         sorted_results = results
         index = 0

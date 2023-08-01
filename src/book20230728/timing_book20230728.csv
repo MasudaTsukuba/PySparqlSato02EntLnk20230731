@@ -1,7 +1,7 @@
 query, date_time, keyword, exec_time
-q1_genre_name.txt,2023-07-31 16:55:30,read_entity_linking_from_csv,0.5076205730438232
-q1_genre_name.txt,2023-07-31 16:55:30,query2json,0.13608360290527344
-q1_genre_name.txt,2023-07-31 16:55:30,sparql_to_sql,0.0005850791931152344
-q1_genre_name.txt,2023-07-31 16:55:30,sql_execution,2.1319518089294434
-q1_genre_name.txt,2023-07-31 16:55:30,sql_to_sparql,0.15720415115356445
-q1_genre_name.txt,2023-07-31 16:55:30,total_execution,30.000982999801636
+q5_genre_label.txt,2023-08-01 14:42:01,read_entity_linking_from_csv,0.48811817169189453
+q5_genre_label.txt,2023-08-01 14:42:01,query2json,0.14245033264160156
+q5_genre_label.txt,2023-08-01 14:42:01,sparql_to_sql,38.96042203903198
+q5_genre_label.txt,2023-08-01 14:42:01,sql_execution,0.003077268600463867
+q5_genre_label.txt,2023-08-01 14:42:01,sql_to_sparql,3.647804260253906e-05
+q5_genre_label.txt,2023-08-01 14:42:01,total_execution,39.60680675506592

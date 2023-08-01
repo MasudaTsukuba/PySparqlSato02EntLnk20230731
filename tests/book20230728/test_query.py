@@ -1,3 +1,8 @@
+# book20230728 / test_query.py
+# test for sparql query
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from src.ExecuteQueryClass import ExecuteQueryClass
 from src.PathClass import PathClass
 
@@ -54,3 +59,8 @@ def test_q4():
 
     results = execute.execute_query('q4_book_name_Soseki.txt')
     assert len(results) == 21
+
+
+def test_q5():
+    results = execute.execute_query('q5_genre_label.txt')  # get genre label from genre URI
+    assert len(results) == 1

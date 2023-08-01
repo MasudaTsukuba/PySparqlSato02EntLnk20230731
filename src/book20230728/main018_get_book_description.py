@@ -1,3 +1,8 @@
+# main018_get_book_description.py
+# get uri of books and their descriptions registered in WikiData
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from SPARQLWrapper import SPARQLWrapper, JSON
 import csv
 

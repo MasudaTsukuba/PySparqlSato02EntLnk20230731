@@ -1,3 +1,8 @@
+# stock_exchange_20230705 / try_execute_sql.py
+# direct execution of sql query against postgreql database
+# 2023/8/1, by Tadashi Masuda
+# Amagasa Laboratory, University of Tsukuba
+
 from src.ExecuteQueryClass import ExecuteQueryClass
 from src.PathClass import PathClass
 
